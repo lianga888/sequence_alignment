@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>var path = "{{path}}"</script>
+
+    <style>
+      /* The Modal (background) */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      }
+
+      /* Modal Content */
+      .modal-content {
+        background-color: #fefefe;
+        word-wrap: break-word;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+      }
+
+      /* The Close Button */
+      .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <p>HI</p>
+    <form id="find-sequence">
+      DNA Sequence Name:<br>
+      <input type="text" name="dna_sequence_name" style="width: 400px"><br>
+      DNA Sequence:<br>
+      <textarea name="dna_sequence" style="width: 400px;height: 200px;"></textarea><br>
+      Delay (s):<br>
+      <input type="text" name="delay_s" style="width: 400px" placeholder="(Optional) If you feel like waiting a while before sequencing ;)"><br>
+      <input type="submit" value="Submit">
+    </form>
+    <h4>Last 10 Results</h4>
+
+    <table id="latest-results" style="width:100%">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>DNA Sequence Name</th>
+          <th>Matched Protein</th>
+          <th>Matched Index</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <div id="sequence-modal" class="modal">
+      <div class="modal-content">
+        <span id="close-btn" class="close">&times;</span>
+        <p id="modal-text"></p>
+      </div>
+    </div>
+
+    <script src="{{url_for('static', filename='seq_finder.js')}}"></script>
+  </body>
+</html>
