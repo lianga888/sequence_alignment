@@ -6,7 +6,7 @@
     var dna_sequence = $(this).find("textarea[name=dna_sequence]").val()
     var delay_s = $(this).find("input[name=delay_s]").val()
     $.ajax({
-      url: path + "/find_dna_sequence",
+      url: "/find_dna_sequence",
       type: "post",
       contentType: "application/json",
       data: JSON.stringify({
@@ -27,7 +27,7 @@
   function populate_results () {
     $.ajax({
       type: "post",
-      url: path + "/get_latest_results",
+      url: "/get_latest_results",
       dataType: "json",
       success: function(response) {
         var $tbody = $("#latest-results").find("tbody");

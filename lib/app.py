@@ -49,7 +49,7 @@ PROTEINS_NAMES = [
 
 @app.route('/')
 def index():
-    return render_template("index.html", path=config["DEFAULT"]["DOMAIN"])
+    return render_template("index.html")
 
 
 def compute_match(search_sequence, search_sequence_name, delay_s):
