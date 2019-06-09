@@ -1,3 +1,7 @@
+## View on production
+`http://andrew-liang.com/sequence_alignment`
+
+
 ## Setup for local development
 
 Assumes python3, virtualenv, and mysql are all installed.
