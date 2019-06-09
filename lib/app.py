@@ -131,7 +131,7 @@ def get_latest_results():
 
 @app.route("/get_searched_by_id/<int:searched>")
 def get_searched_by_id(searched):
-    query = f"SELECT search_sequence FROM results WHERE id = {searched}"
+    query = "SELECT search_sequence FROM results WHERE id = {}".format(searched)
     cursor.execute(query)
 
     search_sequence = cursor.fetchone()
