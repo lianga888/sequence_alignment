@@ -17,6 +17,9 @@
       success: function () {
         alert("Success!")
         $("#find-sequence").find("input[type=text], textarea").val("");
+        setTimeout(function () {
+          populate_results();
+        }, 1000)
       },
       error: function (req, status, error) {
         alert(JSON.parse(req.responseText)["err"])
