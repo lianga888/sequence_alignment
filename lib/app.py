@@ -7,6 +7,7 @@ import threading
 import random
 import copy
 
+from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.Alphabet import generic_protein
 from flask import Flask, request, render_template, Response
@@ -36,7 +37,7 @@ def get_mysql_conn():
     )
 
 
-PROTEINS_NAMES = [
+GENOME_NAMES = [
     "NC_000852",
     "NC_007346",
     "NC_008724",
@@ -56,23 +57,32 @@ def index():
 
 
 def compute_match(search_sequence, search_sequence_name, delay_s):
-    shuffled = copy.copy(PROTEINS_NAMES)
+    shuffled = copy.copy(GENOME_NAMES)
     random.shuffle(shuffled)
     matched_name = None
     matched_index = None
 
-    for protein_name in shuffled:
-        with open(
-            os.path.join(root_dir, "proteins/{}.txt".format(protein_name)), "r"
-        ) as f:
-            protein_seq = Seq(re.sub(r'[\n\s]', '', f.read()), generic_protein)
+    for genome_name in shuffled:
+        gb_record = SeqIO.read(
+            open("genomes/{}.gb".format(genome_name), "r"), "genbank"
+        )
+        full_seq = gb_record.seq
 
-        seq_index = protein_seq.find(search_sequence)
+        for feature in gb_record.features:
+            if feature.type == "CDS":
+                protein_seq = feature.extract(full_seq)
 
-        if seq_index != -1:
-            matched_name = protein_name
-            matched_index = seq_index
-            break
+                # Find exact match within given sequence
+                if protein_seq == search_sequence:
+                    try:
+                        matched_name = feature.qualifiers["protein_id"][0]
+                    except (KeyError, IndexError):
+                        matched_name = "Not Available"
+
+                    # Index within the original genome
+                    # Note that the index starts at 1 instead of 0
+                    matched_index = int(feature.location.start)
+                    break
 
     time.sleep(delay_s)
     db = get_mysql_conn()
