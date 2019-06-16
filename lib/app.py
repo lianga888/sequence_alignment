@@ -25,13 +25,16 @@ app = Flask(
 )
 
 mysql_config = config["mysql"]
-db = mysql.connect(
-    host=mysql_config["DB_HOST"],
-    user=mysql_config["DB_USER"],
-    passwd=mysql_config["DB_PASSWORD"],
-    db=mysql_config["DB_NAME"],
-)
-cursor = db.cursor(buffered=True)
+
+
+def get_mysql_conn():
+    return mysql.connect(
+        host=mysql_config["DB_HOST"],
+        user=mysql_config["DB_USER"],
+        passwd=mysql_config["DB_PASSWORD"],
+        db=mysql_config["DB_NAME"],
+    )
+
 
 PROTEINS_NAMES = [
     "NC_000852",
@@ -72,6 +75,8 @@ def compute_match(search_sequence, search_sequence_name, delay_s):
             break
 
     time.sleep(delay_s)
+    db = get_mysql_conn()
+    cursor = db.cursor(buffered=True)
     cursor.execute(
         "INSERT INTO results "
         "(search_sequence_name, search_sequence, matched_name, matched_index) "
@@ -79,6 +84,7 @@ def compute_match(search_sequence, search_sequence_name, delay_s):
         (search_sequence_name, search_sequence, matched_name, matched_index)
     )
     db.commit()
+    cursor.close()
 
 
 @app.route("/find_dna_sequence", methods=["POST"])
@@ -121,20 +127,26 @@ def find_dna_sequence():
 
 @app.route("/get_latest_results", methods=["POST"])
 def get_latest_results():
+    db = get_mysql_conn()
+    cursor = db.cursor(buffered=True)
     cursor.execute(
         "SELECT id, search_sequence_name, matched_name, matched_index "
         "FROM results ORDER BY id DESC LIMIT 10",
     )
     result = cursor.fetchall()
+    cursor.close()
     return Response(json.dumps(result))
 
 
 @app.route("/get_searched_by_id/<int:searched>")
 def get_searched_by_id(searched):
+    db = get_mysql_conn()
+    cursor = db.cursor(buffered=True)
     query = "SELECT search_sequence FROM results WHERE id = {}".format(searched)
     cursor.execute(query)
 
     search_sequence = cursor.fetchone()
+    cursor.close()
 
     if search_sequence is None:
         return Response(
